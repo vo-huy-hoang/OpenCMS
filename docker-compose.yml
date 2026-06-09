@@ -1,0 +1,34 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: opencms-mariadb
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_DATABASE=opencms
+      - MARIADB_USER=opencms
+      - MARIADB_PASSWORD=opencms
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  opencms:
+    image: alkacon/opencms-docker:latest
+    platform: linux/amd64
+    container_name: opencms
+    restart: always
+    ports:
+      - "8082:8080"
+    depends_on:
+      - mariadb
+    environment:
+      - DB_HOST=mariadb
+      - DB_NAME=opencms
+      - DB_USER=opencms
+      - DB_PASSWD=opencms
+      - SERVER_URL=http://localhost:8082
+    volumes:
+      - opencms_data:/opt/opencms
+
+volumes:
+  opencms_data:
+  mariadb_data:
